@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="lib/require.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div style="width: 100%; background-color: tan; text-align: center; "> 
+        <div style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 25px;">GraphLive</div>
+        <div style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px; padding: 0 10px 10px 10px">Uma ferramenta para o auxilio de aprendizado de Teoria de Grafos</div>
+    </div>
+    <div class="container" style="padding-left: 25px; background-color: white">
+        <div class="row">
+            <div class="col-md-6">
+                    <h5 style="margin:auto">Entrada do Grafo</h5>
+                    <textarea id="entrada" style="resize: none; width: 100%;" name=""  cols="30" rows="10" >
+graph teste: 
+    A= "PALMAS" 
+    B= "PARAISO" 
+    C= "PORTO" 
+    A -60-> B 
+    A <-70-> C 
+    B -150-> C
+                    </textarea>
+            </div>
+            <div class="col-md-6" style="font-size: 12px;">
+                    <h5 style="margin:auto">Linguagem</h5>
+                    <div>Iniciar com: <i style="font-weight: 700;">graph nome_do_grafo:</i></div>
+                    <div>Declarar vértices como variáveis: <a style="font-weight: 700;">Var1 = "nome_do_vértice"</a></div>
+                    <div>As variáveis são <i>case-sensitive</i> e seus nomes devem ser circundados por aspas duplas.</div>
+                    <br>
+                    <div>Relacionar variáveis com arestas:</div>
+                    <div>Não-direcionado e não-valorado:  <i style="font-weight: 700;">Var1 -- Var2</i></div>
+                    <div>Não-direcionado e valorado:  <i style="font-weight: 700;">Var1 -val- Var2</i></div>
+                    <div>Direcionado e não-valorado:  <i style="font-weight: 700;">Var1 --> Var2 ou Var1 <--> Var2</i></div>
+                    <div>Direcionado e valorado:  <i style="font-weight: 700;">Var1 -val-> Var2 ou Var1 <-val-> Var2</i></div>
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12">
+                <button onclick="executar()">Executar</button>
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12">
+                <h5 style="margin:auto">Linguagem DOT</h5>
+                <div style="font-size: 12px;">Código traduzido para a linguagem DOT, para fins de desenvolvimento.</div>
+                <textarea id="saidaDot" style="resize: none; width: 100%;" name=""  cols="30" rows="10" disabled>
+        
+                </textarea>
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12">
+                <h5 style="margin:auto">Características</h5>
+                <div style="font-size: 12px;">Informações básicas sobre o grafo desenhado.</div>
+                <textarea id="saida" style="resize: none; width: 100%;" name=""  cols="30" rows="7" disabled>
+        
+                </textarea>
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12" style="text-align: center;">
+                <h4 style="margin:auto">Grafo</h4>
+                <div style="width: 100%; padding-top: 15px;" class="col border" id="imagem"></div>
+
+
+            </div>
+        </div>
+
+
+
+        <style>
+            table, tr, td, th{
+                border-collapse: collapse;
+                border: 1px solid black;
+                text-align: center;
+                padding: 5px;
+            }
+            thead, tbody{
+                border: 2px solid black;
+            }
+            thead tr{
+                border: 2px solid black;
+            }
+            th{
+                border-left: 2px solid black;
+                border-right: 2px solid black;
+            }
+            th{
+                background-color: lightgray;
+            }
+        </style>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12">
+                <h4 style="margin:auto">Matriz de Adjacências</h4>
+                <div style="font-size: 12px;">Representação das relações entre os vértices. <br>Relações sem valor são representadas pelo numero 0, enquanto a ausência de relação é identificada por '--'.</div>
+                <div>
+                    <table>
+                        <thead>
+                            <tr id="trNodes">
+        
+                            </tr>
+                        </thead>
+                        <tbody id="adjBody">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-12">
+                <h4 style="margin:auto">Matriz de Incidências</h4>
+                <div style="font-size: 12px;">Representação das relações entre os Arestas e Vértices. 
+                    <br>Expecificamente, quantas vezes uma aresta se relaciona com um vértice.
+                    <br>Em grafos direcionados, numeros negativos indicam relacionamentos unidirecionais de saída.
+                </div>
+                <div>
+                    <table>
+                        <thead>
+                            <tr id="trIncNodes">
+
+                            </tr>
+                        </thead>
+                        <tbody id="incBody">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    
+    <script src="/lib/viz.js"></script>
+    <script src="/lib/full.render.js"></script>   
+
+
+    <script type="text/javascript">
+
+            var antlr4 = require('./antlr4/index');
+            var GraphGLexer = require('./parser/GraphGLexer').GraphGLexer;
+            var GraphGParser = require('./parser/GraphGParser').GraphGParser;
+            var HtmlGraphGListener = require('./parser/HtmlGraphGListener').HtmlGraphGListener;
+        function executar(){
+            var input = $("#entrada").val();
+            //console.log(input);
+
+            var chars = new antlr4.InputStream(input);
+            var lexer = new GraphGLexer(chars);
+            var tokens = new antlr4.CommonTokenStream(lexer);
+            var parser = new GraphGParser(tokens);
+
+            parser.buildParseTrees = true;
+            var tree = parser.prog();
+            var htmlGraphG = new HtmlGraphGListener();
+            antlr4.tree.ParseTreeWalker.DEFAULT.walk(htmlGraphG, tree);
+
+            var viz = new Viz();
+            
+            //console.log(htmlGraphG['value'][0]);
+            $('#saidaDot').val(htmlGraphG['value'][0])
+            
+            viz.renderSVGElement(htmlGraphG['value'][0])
+            .then(function(element) {
+                //console.log(element);
+                //document.body.appendChild(element);
+                var elm = document.getElementById('imagem');
+                //console.log(elm.childElementCount);
+                if(elm.childElementCount > 0){
+                    elm.innerHTML='';
+                }
+                desenhar();
+                elm.appendChild(element);
+                
+                
+            })
+            .catch(error => {
+                // Create a new Viz instance (@see Caveats page for more info)
+                viz = new Viz();
+
+                // Possibly display the error
+                console.error(error);
+            });
+
+
+
+            function desenhar(){
+                var str = 'Arestas: '+htmlGraphG['listaArestas'].length+'\n';
+                str += 'Quantidade de Nós: '+htmlGraphG['qtNodes']+'\n';
+                for(var i=0; i<htmlGraphG['qtNodes']; i++){
+                    str += 'Grau do nó '+htmlGraphG['graus'][i]['node'] +': '+htmlGraphG['graus'][i]['grau']+'\n';
+                }
+                
+                if(htmlGraphG['dir'] == 0){
+                    str += 'Grafo não direcionado. \n';
+                }
+                if(htmlGraphG['dir'] > 0){
+                    str += 'Grafo direcionado. \n';
+                }
+                $('#saida').val(str);
+
+
+                tblAdjHeader  = "<th></th>\n";
+                tblInHeader = "<th></th>\n";
+                tblAdjBody = "";
+                tblIncBody = "";
+
+
+
+                
+                for(var d=0; d<htmlGraphG['labels'].length; d++){
+
+                    tblAdjHeader += "<th>"+htmlGraphG['labels'][d][1]+"</th>"
+
+                    tblAdjBody += "<tr>"
+                    tblAdjBody += "<th>"+htmlGraphG['labels'][d][1]+"</th>"
+                    
+                    for(var c=0; c<htmlGraphG['labels'].length; c++){
+                        tblAdjBody += "<td>"+buscaRelacao(htmlGraphG['labels'][d][0], htmlGraphG['labels'][c][0])+"</td>"
+                        
+                    }
+                    tblAdjBody += "</tr>"
+                    tblInHeader += "<th>"+htmlGraphG['labels'][d][1]+"</th>"
+                }
+
+
+                for(var i=0; i<htmlGraphG['listaArestas'].length; i++){
+                    tblIncBody += "<tr>"
+
+                    tblIncBody += "<th>"+htmlGraphG['listaArestas'][i]+"</th>"
+                    for(var c=0; c<htmlGraphG['labels'].length; c++){
+                        tblIncBody +=  "<td>"+buscaArestas(htmlGraphG['labels'][c][0], htmlGraphG['listaArestas'][i])+"</td>"    
+                    }
+                     
+                        
+                    tblIncBody += "</tr>"
+                }
+
+
+
+
+
+
+
+                $('#trNodes').empty()
+                $('#trNodes').append(tblAdjHeader)
+                $('#adjBody').empty();
+                $('#adjBody').append(tblAdjBody)
+                
+                
+                $('#trIncNodes').empty()
+                $('#trIncNodes').append(tblInHeader)
+                $('#incBody').empty()
+                $('#incBody').append(tblIncBody)
+
+
+
+
+                // console.log(relacoes)
+
+
+
+                /**  BUSCA NOME DO NÓ  **/
+                function buscaNome(node){
+                    for(var l=0; l<htmlGraphG['labels'].length; l++){
+                        if(htmlGraphG['labels'][l][0] == node){
+                            return htmlGraphG['labels'][l][1]
+                        }
+                    }
+                }
+
+
+                function buscaRelacao(nodeA, nodeB){
+                    ret = "--";
+                    for(var r=0; r<htmlGraphG['adjacencia'].length; r++){
+                        if(htmlGraphG['adjacencia'][r][0] == nodeA && htmlGraphG['adjacencia'][r][2] == nodeB){
+                            ret = htmlGraphG['adjacencia'][r][1]
+                        }
+                    }
+                    // console.log(ret)
+                    return ret;
+                }
+
+                function buscaArestas(node, aresta){
+                    ret = 0;
+                    cont = 0;
+                    for(var r=0; r<htmlGraphG['adjacencia'].length; r++){
+                        if(htmlGraphG['adjacencia'][r][3] == aresta){
+                            if(htmlGraphG['dir']>0){
+                                if(htmlGraphG['adjacencia'][r][0] == node){
+                                    ret--;
+                                    cont ++;
+                                }
+                                if(htmlGraphG['adjacencia'][r][2] == node){
+                                    ret++;
+                                    cont ++;
+                                }
+                            }else{
+                                if(htmlGraphG['adjacencia'][r][0] == node){
+                                    ret++;
+                                }
+                            }
+
+                        }
+                    }
+                    if(ret == 0 && cont > 0){
+                        return cont;
+                    }else{
+                        return ret;
+                    }
+
+                    
+                }
+            }
+            
+
+        }
+
+
+
+        
+    </script>
+</body>
+</html>
