@@ -11,11 +11,13 @@
 
 </head>
 <body>
+
     <div style="width: 100%; background-color: tan; text-align: center; "> 
         <div style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 25px;">GraphLive</div>
         <div style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px; padding: 0 10px 10px 10px">Uma ferramenta para o auxilio de aprendizado de Teoria de Grafos</div>
     </div>
-    <div class="container" style="padding-left: 25px; background-color: white">
+    <div class="load">Carregando...</div>
+    <div class="container" style="padding-left: 25px; background-color: white; display: none;">
         <div class="row">
             <div class="col-md-6">
                     <h5 style="margin:auto">Entrada do Grafo</h5>
@@ -163,6 +165,10 @@ graph teste:
 
 
     <script type="text/javascript">
+        $(document).ready(function() { 
+            $(".container").toggle()
+            $(".load").toggle()
+        });
 
             var antlr4 = require('./antlr4/index');
             var GraphGLexer = require('./parser/GraphGLexer').GraphGLexer;
